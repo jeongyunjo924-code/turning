@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="only light" />
+<meta name="theme-color" content="#FBF7F0" />
 <title>도형 뒤집기 시뮬레이션</title>
 <style>
   * { box-sizing: border-box; }
+  html { color-scheme: only light; }
   html, body {
     margin: 0; padding: 0;
     position: fixed; top: 0; right: 0; bottom: 0; left: 0;
@@ -20,6 +23,7 @@
     background: #FBF7F0;
     color: #2B2A28;
     font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    padding: 12px 14px;
     padding:
       max(env(safe-area-inset-top), clamp(8px, 1.5vh, 16px))
       max(env(safe-area-inset-right), clamp(10px, 2vw, 20px))
@@ -30,6 +34,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .wrap {
+    max-width: 1100px;
     max-width: min(1100px, 100%);
     width: 100%;
     margin: 0 auto;
@@ -38,35 +43,23 @@
     display: flex; flex-direction: column;
   }
   .title {
+    font-size: 20px;
     font-size: clamp(16px, 2.4vh, 24px);
     font-weight: 800; margin: 0; color: #1F4B3F; flex-shrink: 0;
   }
   .subtitle {
     margin: 2px 0 8px; color: #6B6459;
+    font-size: 13px;
     font-size: clamp(11px, 1.4vh, 14px); flex-shrink: 0;
   }
   @media (max-width: 600px) { .subtitle { display: none; } }
-  /* 화면 높이가 낮을 때(폰 가로 등): 제목을 숨기고 여백·버튼을 줄여 한 화면에 맞춤 */
-  @media (max-height: 480px) {
-    .title, .subtitle { display: none; }
-    .btn { min-height: 30px; padding: 5px 10px; font-size: 12px; }
-    .btn.pill { min-height: 30px; padding: 5px 12px; }
-    .btn.small { min-height: 28px; padding: 4px 10px; }
-    .btn.main { padding: 5px 0; }
-    .shape-btns { margin-bottom: 4px; }
-    .draw-bar { margin-bottom: 4px; padding: 4px 10px; }
-    .controls { margin-top: 4px; padding: 6px 8px; display: flex; flex-wrap: wrap; column-gap: 12px; }
-    .controls .row { margin-bottom: 4px; }
-    .controls .actions { flex: 1 1 100%; margin-top: 2px; }
-    .status { margin-top: 4px; padding: 5px 10px; }
-  }
-
   .btn {
     padding: 9px 14px; min-height: 38px;
     border-radius: 10px; border: 2px solid #DDD5C4;
     background: #fff; color: #2B2A28;
     font-weight: 700; font-size: 13px; font-family: inherit;
     cursor: pointer;
+    -webkit-appearance: none; appearance: none;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none; -webkit-user-select: none;
@@ -116,9 +109,75 @@
   .status {
     margin-top: 6px; flex-shrink: 0; padding: 8px 14px;
     background: #F0F5F2; border: 1px solid #D7E5DE; border-radius: 10px;
+    font-size: 13px;
     font-size: clamp(12px, 1.6vh, 14px); font-weight: 600; color: #1F4B3F;
     text-align: center;
   }
+
+  /* 화면 높이가 낮을 때(폰 가로 등): 제목을 숨기고 여백·버튼을 줄여 한 화면에 맞춤 */
+  @media (max-height: 480px) {
+    .title, .subtitle { display: none; }
+    .btn { min-height: 30px; padding: 5px 10px; font-size: 12px; }
+    .btn.pill { min-height: 30px; padding: 5px 12px; }
+    .btn.small { min-height: 28px; padding: 4px 10px; }
+    .btn.main { padding: 5px 0; }
+    .shape-btns { margin-bottom: 4px; }
+    .draw-bar { margin-bottom: 4px; padding: 4px 10px; }
+    .controls { margin-top: 4px; padding: 6px 8px; display: flex; flex-wrap: wrap; column-gap: 12px; }
+    .controls .row { margin-bottom: 4px; }
+    .controls .actions { flex: 1 1 100%; margin-top: 2px; }
+    .status { margin-top: 4px; padding: 5px 10px; }
+  }
+  /* 세로로 든 작은 폰(예: 320x568): 여백·버튼을 줄이고, 도형을 그리는 동안은 조작 버튼을 숨겨 격자판 공간 확보 */
+  @media (max-width: 600px) and (max-height: 700px) and (orientation: portrait) {
+    .btn { min-height: 32px; padding: 6px 10px; font-size: 12px; }
+    .btn.pill { min-height: 32px; padding: 6px 12px; }
+    .btn.small { min-height: 28px; padding: 4px 10px; }
+    .btn.main { padding: 6px 0; }
+    .btns .btn { min-width: 0 !important; }
+    .shape-btns { margin-bottom: 6px; }
+    .draw-bar { margin-bottom: 6px; padding: 4px 10px; }
+    .controls { margin-top: 6px; padding: 8px; }
+    .row { margin-bottom: 4px; }
+    .status { margin-top: 4px; padding: 6px 10px; }
+    .drawing-active .controls { display: none; }
+  }
+  @media (max-width: 360px) and (orientation: portrait) {
+    .btns { gap: 4px; }
+    .btns .btn { padding: 6px 6px; }
+    .label { width: 32px; }
+    .row { gap: 6px; }
+  }
+  @media (max-height: 620px) and (orientation: portrait) { .title { display: none; } }
+  /* 폰 가로 모드: 조작 버튼을 오른쪽 열로 옮겨 격자판을 최대한 크게 */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      column-gap: 8px;
+    }
+    .shape-btns { grid-column: 1; grid-row: 1; }
+    .draw-bar { grid-column: 1; grid-row: 2; }
+    .panels { grid-column: 1; grid-row: 3; }
+    .controls { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; display: block; overflow: hidden; align-self: start; }
+    .status { grid-column: 1 / span 2; grid-row: 4; }
+    .btn.pill { padding: 5px 9px; }
+    .draw-bar { font-size: 11px; }
+    .drawing-active .wrap { grid-template-columns: minmax(0, 1fr); }
+    .drawing-active .controls { display: none; }
+    .drawing-active .status { grid-column: 1; }
+  }
+  @media (max-height: 480px) and (max-width: 640px) and (orientation: landscape) {
+    .wrap { grid-template-columns: minmax(0, 1fr) 210px; }
+  }
+
+  /* flex gap 미지원 브라우저(iOS 14.4 이하 등)용 여백 대체 */
+  .no-flex-gap .shape-btns > *, .no-flex-gap .btns > *, .no-flex-gap .draw-actions > * { margin: 0 6px 6px 0; }
+  .no-flex-gap .row > * { margin-right: 8px; }
+  .no-flex-gap .row > .btns { margin-right: 0; }
+  .no-flex-gap .actions > * + * { margin-left: 8px; }
+  .no-flex-gap .draw-bar > * { margin-right: 6px; }
 </style>
 </head>
 <body>
@@ -164,6 +223,18 @@
 (function () {
   'use strict';
 
+  // flex gap 미지원 브라우저 감지 → 여백을 margin으로 대체
+  (function () {
+    var f = document.createElement('div');
+    f.style.cssText = 'display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';
+    f.appendChild(document.createElement('div'));
+    f.appendChild(document.createElement('div'));
+    document.body.appendChild(f);
+    var ok = f.scrollHeight === 1;
+    document.body.removeChild(f);
+    if (!ok) document.documentElement.className += ' no-flex-gap';
+  })();
+
   // ---------- 격자 설정 ----------
   var GRID_SIZE = 12;               // 12 x 12 칸
   var CELL = 28;                    // 칸 하나(viewBox 단위)
@@ -182,10 +253,6 @@
     ],
     '삼각형': [
       { x: 4, y: 4 }, { x: 4, y: 8 }, { x: 8, y: 8 }
-    ],
-    '화살표': [
-      { x: 4, y: 6 }, { x: 6, y: 4 }, { x: 8, y: 6 }, { x: 7, y: 6 },
-      { x: 7, y: 8 }, { x: 5, y: 8 }, { x: 5, y: 6 }
     ]
   };
   var DRAW = '직접 그리기';
@@ -202,7 +269,7 @@
 
   // ---------- 상태 ----------
   var state = {
-    shapeName: '화살표',
+    shapeName: '집 모양',
     customPoints: [],
     drawingMode: false,
     direction: 'right',
@@ -377,10 +444,16 @@
   function renderDrawBar() {
     var show = state.shapeName === DRAW;
     drawBar.hidden = !show;
+    // 그리는 중에는 CSS로 조작 버튼을 숨겨 작은 화면에서 격자판을 넓게 씀
+    var root = document.documentElement;
+    var cls = ' ' + root.className + ' ';
+    var active = show && state.drawingMode;
+    cls = cls.replace(' drawing-active ', ' ');
+    root.className = (cls + (active ? 'drawing-active' : '')).replace(/^\s+|\s+$/g, '');
     if (!show) return;
     var n = state.customPoints.length;
     drawMsg.textContent = state.drawingMode
-      ? '왼쪽 모눈판의 점을 순서대로 클릭해 도형을 그려보세요. (현재 점 ' + n + '개)'
+      ? '왼쪽 모눈판의 점을 차례로 눌러 도형을 그려보세요. (점 ' + n + '개)'
       : '도형이 완성되었습니다. 뒤집기를 진행해보세요.';
     finishBtn.disabled = !(state.drawingMode && n >= 3);
   }
@@ -483,11 +556,14 @@
   // ---------- 동작 ----------
   function handleGridClick(e) {
     if (state.shapeName !== DRAW || !state.drawingMode) return;
-    var ctm = svgL.getScreenCTM();
-    if (!ctm) return;
-    var pt = svgL.createSVGPoint();
-    pt.x = e.clientX; pt.y = e.clientY;
-    var p = pt.matrixTransform(ctm.inverse());
+    // 테두리(2px)와 화면 배율을 직접 보정해 viewBox 좌표로 변환 (브라우저별 getScreenCTM 차이 방지)
+    var rect = svgL.getBoundingClientRect();
+    var inner = rect.width - 4;
+    if (inner <= 0) return;
+    var p = {
+      x: (e.clientX - rect.left - 2) * SVG_SIZE / inner,
+      y: (e.clientY - rect.top - 2) * SVG_SIZE / inner
+    };
     var gx = Math.round((p.x - PAD) / CELL);
     var gy = Math.round((p.y - PAD) / CELL);
     if (gx < 0 || gx > GRID_SIZE || gy < 0 || gy > GRID_SIZE) return;
@@ -586,8 +662,9 @@
     var w = panels.clientWidth;
     var h = panels.clientHeight;
     var gap = w < 600 ? 8 : 20;
-    var side = Math.floor(Math.max(80, Math.min((w - gap) / 2, h - 24, 480)));
+    var side = Math.floor(Math.max(48, Math.min((w - gap) / 2, h - 24, 480)));
     panels.style.gap = gap + 'px';
+    panelR.style.marginLeft = document.documentElement.className.indexOf('no-flex-gap') >= 0 ? gap + 'px' : '';
     [[panelL, svgL], [panelR, svgR]].forEach(function (pair) {
       pair[0].style.width = side + 'px';
       pair[1].setAttribute('width', side);
