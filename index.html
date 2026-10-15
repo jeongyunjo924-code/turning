@@ -67,12 +67,11 @@
   .btn:active { transform: scale(0.96); }
   .btn.on-green { background: #1F4B3F; color: #fff; border-color: #1F4B3F; }
   .btn.on-orange { background: #C1622D; color: #fff; border-color: #C1622D; }
+  .btn.done { background: #EEF5E0; border-color: #A8C66C; }
   .btn.pill { padding: 8px 14px; min-height: 36px; border-radius: 999px; }
   .btn.small { padding: 6px 12px; min-height: 32px; font-size: 12px; }
   .btn.solid { background: #1F4B3F; color: #fff; border-color: #1F4B3F; }
-  .btn.main { flex: 1; font-size: 15px; padding: 9px 0; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn.main:disabled { opacity: 0.5; }
 
   .shape-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
 
@@ -86,25 +85,21 @@
   .draw-bar[hidden] { display: none; }
   .draw-actions { display: flex; gap: 6px; }
 
-  .panels {
+  .board-area {
+    flex: 1; min-height: 0; min-width: 0; overflow: hidden;
     display: flex; justify-content: center; align-items: center;
-    flex: 1; min-height: 0; min-width: 0; overflow: hidden; gap: 8px;
   }
-  .panel { flex: none; display: flex; flex-direction: column; align-items: center; }
-  .panel-title {
-    font-weight: 800; font-size: 14px; line-height: 20px; height: 20px;
-    margin-bottom: 2px; text-align: center;
-  }
-  .grid-svg { background: #fff; border-radius: 12px; display: block; }
+  #board { display: block; user-select: none; -webkit-user-select: none; }
+  .tap { cursor: pointer; }
 
   .controls {
     margin-top: 8px; flex-shrink: 0;
     background: #fff; border: 1px solid #EBE4D6; border-radius: 12px; padding: 10px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   }
-  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-  .label { width: 40px; font-weight: 700; color: #6B6459; font-size: 13px; }
-  .btns { display: flex; gap: 6px; flex-wrap: wrap; }
-  .actions { display: flex; gap: 8px; margin-top: 6px; }
+  .label { font-weight: 700; color: #6B6459; font-size: 13px; }
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  .btns .btn { flex: 1; min-width: 84px; font-size: 14px; white-space: nowrap; }
 
   .status {
     margin-top: 6px; flex-shrink: 0; padding: 8px 14px;
@@ -120,63 +115,38 @@
     .btn { min-height: 30px; padding: 5px 10px; font-size: 12px; }
     .btn.pill { min-height: 30px; padding: 5px 12px; }
     .btn.small { min-height: 28px; padding: 4px 10px; }
-    .btn.main { padding: 5px 0; }
     .shape-btns { margin-bottom: 4px; }
     .draw-bar { margin-bottom: 4px; padding: 4px 10px; }
-    .controls { margin-top: 4px; padding: 6px 8px; display: flex; flex-wrap: wrap; column-gap: 12px; }
-    .controls .row { margin-bottom: 4px; }
-    .controls .actions { flex: 1 1 100%; margin-top: 2px; }
+    .controls { margin-top: 4px; padding: 6px 8px; }
     .status { margin-top: 4px; padding: 5px 10px; }
   }
-  /* 세로로 든 작은 폰(예: 320x568): 여백·버튼을 줄이고, 도형을 그리는 동안은 조작 버튼을 숨겨 격자판 공간 확보 */
-  @media (max-width: 600px) and (max-height: 700px) and (orientation: portrait) {
-    .btn { min-height: 32px; padding: 6px 10px; font-size: 12px; }
-    .btn.pill { min-height: 32px; padding: 6px 12px; }
-    .btn.small { min-height: 28px; padding: 4px 10px; }
-    .btn.main { padding: 6px 0; }
-    .btns .btn { min-width: 0 !important; }
-    .shape-btns { margin-bottom: 6px; }
-    .draw-bar { margin-bottom: 6px; padding: 4px 10px; }
-    .controls { margin-top: 6px; padding: 8px; }
-    .row { margin-bottom: 4px; }
-    .status { margin-top: 4px; padding: 6px 10px; }
+  @media (max-width: 600px) and (orientation: portrait) {
+    .btn { min-height: 32px; padding: 6px 8px; font-size: 12px; }
+    .btns .btn { min-width: 0; font-size: 12px; }
+    .controls .label { display: none; }
     .drawing-active .controls { display: none; }
   }
-  @media (max-width: 360px) and (orientation: portrait) {
-    .btns { gap: 4px; }
-    .btns .btn { padding: 6px 6px; }
-    .label { width: 32px; }
-    .row { gap: 6px; }
-  }
   @media (max-height: 620px) and (orientation: portrait) { .title { display: none; } }
-  /* 폰 가로 모드: 조작 버튼을 오른쪽 열로 옮겨 격자판을 최대한 크게 */
+  /* 폰 가로 모드: 조작 버튼을 오른쪽 열로 옮겨 판을 최대한 크게 */
   @media (max-height: 480px) and (orientation: landscape) {
     .wrap {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 250px;
+      grid-template-columns: minmax(0, 1fr) 200px;
       grid-template-rows: auto auto minmax(0, 1fr) auto;
       column-gap: 8px;
     }
-    .shape-btns { grid-column: 1; grid-row: 1; }
-    .draw-bar { grid-column: 1; grid-row: 2; }
-    .panels { grid-column: 1; grid-row: 3; }
-    .controls { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; display: block; overflow: hidden; align-self: start; }
+    .shape-btns { grid-column: 1 / span 2; grid-row: 1; }
+    .draw-bar { grid-column: 1 / span 2; grid-row: 2; }
+    .board-area { grid-column: 1; grid-row: 3; }
+    .controls { grid-column: 2; grid-row: 3; margin-top: 0; align-self: center; flex-direction: column; align-items: stretch; }
+    .controls .label { display: none; }
+    .btns { flex-direction: column; }
     .status { grid-column: 1 / span 2; grid-row: 4; }
-    .btn.pill { padding: 5px 9px; }
-    .draw-bar { font-size: 11px; }
-    .drawing-active .wrap { grid-template-columns: minmax(0, 1fr); }
-    .drawing-active .controls { display: none; }
-    .drawing-active .status { grid-column: 1; }
-  }
-  @media (max-height: 480px) and (max-width: 640px) and (orientation: landscape) {
-    .wrap { grid-template-columns: minmax(0, 1fr) 210px; }
   }
 
   /* flex gap 미지원 브라우저(iOS 14.4 이하 등)용 여백 대체 */
   .no-flex-gap .shape-btns > *, .no-flex-gap .btns > *, .no-flex-gap .draw-actions > * { margin: 0 6px 6px 0; }
-  .no-flex-gap .row > * { margin-right: 8px; }
-  .no-flex-gap .row > .btns { margin-right: 0; }
-  .no-flex-gap .actions > * + * { margin-left: 8px; }
+  .no-flex-gap .controls > * { margin-right: 8px; }
   .no-flex-gap .draw-bar > * { margin-right: 6px; }
 </style>
 </head>
@@ -184,7 +154,7 @@
 <div id="app">
   <div class="wrap">
     <h1 class="title">도형 뒤집기 시뮬레이션</h1>
-    <p class="subtitle">도형을 고르거나 직접 그린 뒤, 뒤집기 전과 뒤집은 후의 모습을 비교해보세요.</p>
+    <p class="subtitle">도형을 고르거나 직접 그린 뒤, 위쪽·아래쪽·왼쪽·오른쪽으로 뒤집으면 어떻게 될지 예상하고 확인해 보세요.</p>
 
     <div class="shape-btns" id="shapeBtns"></div>
 
@@ -196,23 +166,14 @@
       </div>
     </div>
 
-    <div class="panels" id="panels">
-      <div class="panel" id="panelL">
-        <div class="panel-title" style="color:#1F4B3F">뒤집기 전</div>
-        <svg class="grid-svg" id="svgL" style="border:2px solid #1F4B3F33"></svg>
-      </div>
-      <div class="panel" id="panelR">
-        <div class="panel-title" style="color:#C1622D">뒤집은 후</div>
-        <svg class="grid-svg" id="svgR" style="border:2px solid #C1622D33"></svg>
-      </div>
+    <div class="board-area" id="boardArea">
+      <svg id="board"></svg>
     </div>
 
     <div class="controls">
-      <div class="row"><span class="label">방향</span><div class="btns" id="dirBtns"></div></div>
-      <div class="actions">
-        <button class="btn main solid" id="actionBtn">뒤집기</button>
-        <button class="btn" id="resetBtn" style="padding:9px 18px">초기화</button>
-      </div>
+      <span class="label">뒤집기</span>
+      <div class="btns" id="dirBtns"></div>
+      <button class="btn" id="resetBtn">초기화</button>
     </div>
 
     <div class="status" id="status"></div>
@@ -235,75 +196,78 @@
     if (!ok) document.documentElement.className += ' no-flex-gap';
   })();
 
-  // ---------- 격자 설정 ----------
-  var PRESET_GRID = 12;             // 기본 도형: 12 x 12 칸
-  var DRAW_GRID = 5;                // 직접 그리기: 활동지와 같은 5 x 5 칸
-  var PAD = 20;
-  var SVG_SIZE = PRESET_GRID * 28 + PAD * 2;   // 격자판 크기는 항상 같게 유지
-  var GRID_SIZE = PRESET_GRID;
-  var CELL = 28;                    // 칸 하나(viewBox 단위), 격자 칸 수에 따라 바뀜
+  // ---------- 판 설정 (교과서처럼 가운데 + 위·아래·왼쪽·오른쪽 4칸) ----------
+  var N = 5;                 // 5 x 5 모눈 (활동지와 같음)
+  var U = 44;                // 모눈 한 칸 (viewBox 단위)
+  var B = N * U;             // 상자 한 변
+  var G = 96;                // 상자 사이 간격 (점선 기준선과 화살표 자리)
+  var P = 26;                // 바깥 여백 (이름표 자리)
+  var VB = P * 2 + B * 3 + G * 2;
   var NS = 'http://www.w3.org/2000/svg';
 
-  // 지금 고른 도형에 맞춰 격자 칸 수와 칸 크기를 정함
-  function applyGrid() {
-    GRID_SIZE = state.shapeName === DRAW ? DRAW_GRID : PRESET_GRID;
-    CELL = (SVG_SIZE - PAD * 2) / GRID_SIZE;
-  }
-
-  function toPx(p) { return { x: PAD + p.x * CELL, y: PAD + p.y * CELL }; }
-
-  // ---------- 기본 도형 (격자 좌표, 4칸 x 4칸 크기로 가운데 배치) ----------
-  // 노란 점(첫 번째 점)이 뒤집힌 방향을 알아보기 쉽도록 꼭짓점 위치를 정함
-  var PRESETS = {
-    '집 모양': [
-      { x: 5, y: 8 }, { x: 7, y: 8 }, { x: 7, y: 6 }, { x: 8, y: 6 },
-      { x: 7, y: 4 }, { x: 5, y: 4 }, { x: 4, y: 6 }, { x: 5, y: 6 }
-    ],
-    '삼각형': [
-      { x: 4, y: 4 }, { x: 4, y: 8 }, { x: 8, y: 8 }
-    ]
+  var BOX = {
+    center: { c: 1, r: 1 },
+    up:     { c: 1, r: 0 },
+    down:   { c: 1, r: 2 },
+    left:   { c: 0, r: 1 },
+    right:  { c: 2, r: 1 }
   };
-  var DRAW = '직접 그리기';
-  var TRI = '삼각형';
-  var HOUSE = '집 모양';
+  function boxOrigin(key) {
+    var b = BOX[key];
+    return { x: P + b.c * (B + G), y: P + b.r * (B + G) };
+  }
   var DIRS = [
     { key: 'up',    label: '↑ 위쪽',   name: '위쪽' },
     { key: 'down',  label: '↓ 아래쪽', name: '아래쪽' },
     { key: 'left',  label: '← 왼쪽',   name: '왼쪽' },
     { key: 'right', label: '→ 오른쪽', name: '오른쪽' }
   ];
-  var DEFAULT_STATUS = "도형을 고르고 '뒤집기'를 눌러보세요.";
-  var HINT = '어느 방향으로도 뒤집을 공간이 없어요. 도형을 격자 안쪽에 다시 그려보세요.';
+
+  // ---------- 기본 도형 (5x5 모눈 좌표) ----------
+  var PRESETS = {
+    '깃발 모양': {
+      head: false,
+      parts: [
+        { pts: [{ x: 1.4, y: 0.6 }, { x: 2.1, y: 0.6 }, { x: 2.1, y: 4.4 }, { x: 1.4, y: 4.4 }], fill: '#8FC14A', stroke: '#6E9A33' },
+        { pts: [{ x: 2.1, y: 0.6 }, { x: 4.0, y: 1.7 }, { x: 2.1, y: 2.8 }], fill: '#E8517E', stroke: '#C23A63' }
+      ]
+    },
+    '집 모양': {
+      head: true,
+      parts: [
+        { pts: [{ x: 1.5, y: 4.5 }, { x: 3.5, y: 4.5 }, { x: 3.5, y: 2.5 }, { x: 1.5, y: 2.5 }], fill: '#FFD666', stroke: '#D9A32B' },
+        { pts: [{ x: 1, y: 2.5 }, { x: 4, y: 2.5 }, { x: 3, y: 1 }, { x: 2, y: 1 }], fill: '#6FD8F5', stroke: '#2AA9CE' }
+      ]
+    },
+    '삼각형': {
+      head: true,
+      parts: [
+        { pts: [{ x: 1, y: 1 }, { x: 1, y: 4 }, { x: 4, y: 4 }], fill: '#DDEFC6', stroke: '#8BC34A' }
+      ]
+    }
+  };
+  var DRAW = '직접 그리기';
+  var DEFAULT_STATUS = '어떻게 될지 먼저 예상한 뒤, 뒤집을 방향을 눌러 보세요.';
 
   // ---------- 상태 ----------
   var state = {
-    shapeName: '집 모양',
+    shapeName: '깃발 모양',
     customPoints: [],
     drawingMode: false,
-    direction: 'right',
-    flips: 0,                 // 지금까지 뒤집은 횟수
-    curPts: null,             // 뒤집은 후(오른쪽)의 현재 꼭짓점
-    prevPts: null,            // 마지막으로 뒤집기 직전 꼭짓점 (점선 윤곽용)
-    lastFlip: null,           // 마지막 뒤집기의 기준선 정보
-    animPts: null, animInfo: null, flipT: 0,
-    status: DEFAULT_STATUS, lastStatus: DEFAULT_STATUS,
-    isAnimating: false
+    flipped: { up: false, down: false, left: false, right: false },
+    anim: null,               // { dir, t }
+    status: DEFAULT_STATUS
   };
   var rafId = null;
-  var flipGroup = null;
+  var animGroup = null;
 
   // ---------- DOM 참조 ----------
   var $ = function (id) { return document.getElementById(id); };
   var shapeBtns = $('shapeBtns'), drawBar = $('drawBar'), drawMsg = $('drawMsg');
   var finishBtn = $('finishBtn'), clearBtn = $('clearBtn');
-  var panels = $('panels'), panelL = $('panelL'), panelR = $('panelR');
-  var svgL = $('svgL'), svgR = $('svgR');
-  var dirBtns = $('dirBtns');
-  var actionBtn = $('actionBtn'), resetBtn = $('resetBtn'), statusEl = $('status');
-
-  [svgL, svgR].forEach(function (s) {
-    s.setAttribute('viewBox', '0 0 ' + SVG_SIZE + ' ' + SVG_SIZE);
-  });
+  var boardArea = $('boardArea'), board = $('board');
+  var dirBtns = $('dirBtns'), resetBtn = $('resetBtn'), statusEl = $('status');
+  board.setAttribute('viewBox', '0 0 ' + VB + ' ' + VB);
 
   // ---------- 헬퍼 ----------
   function S(tag, attrs, parent) {
@@ -313,127 +277,104 @@
     return e;
   }
   function dirOf(key) { return DIRS.filter(function (d) { return d.key === key; })[0]; }
-  function getPoints() {
-    return state.shapeName === DRAW ? state.customPoints : PRESETS[state.shapeName];
+  function getShape() {
+    if (state.shapeName === DRAW) {
+      return { head: true, parts: [{ pts: state.customPoints, fill: '#F3C9AE', stroke: '#C1622D' }] };
+    }
+    return PRESETS[state.shapeName];
   }
   function hasShape() {
-    var pts = getPoints();
-    var unfinished = state.shapeName === DRAW && state.drawingMode;
-    return !!pts && pts.length >= 3 && !unfinished;
+    if (state.shapeName !== DRAW) return true;
+    return !state.drawingMode && state.customPoints.length >= 3;
   }
-  function rightPts() { return state.flips > 0 ? state.curPts : getPoints(); }
-  function bbox(pts) {
-    var b = { minx: 1e9, maxx: -1e9, miny: 1e9, maxy: -1e9 };
-    pts.forEach(function (p) {
-      b.minx = Math.min(b.minx, p.x); b.maxx = Math.max(b.maxx, p.x);
-      b.miny = Math.min(b.miny, p.y); b.maxy = Math.max(b.maxy, p.y);
-    });
-    return b;
+  // 상자 안 모눈 좌표 → 화면 좌표. mirror: 해당 방향으로 뒤집은 모양(상자 안에서 좌우/상하가 바뀜)
+  function mapper(boxKey, mirror) {
+    var o = boxOrigin(boxKey);
+    return function (p) {
+      var x = p.x, y = p.y;
+      if (mirror === 'left' || mirror === 'right') x = N - x;
+      if (mirror === 'up' || mirror === 'down') y = N - y;
+      return { x: o.x + x * U, y: o.y + y * U };
+    };
   }
-  // 뒤집는 기준선: 도형의 해당 쪽 끝 선
-  // (직접 그리기 5x5 모눈에서는 모눈판 가운데 선을 기준으로 종이를 통째로 뒤집듯 뒤집어 칸 밖으로 나가지 않게 함)
-  function axisOf(dir, pts) {
-    var b = bbox(pts);
-    if (state.shapeName === DRAW) {
-      return { vertical: dir === 'left' || dir === 'right', v: GRID_SIZE / 2 };
-    }
-    if (dir === 'right') return { vertical: true, v: b.maxx };
-    if (dir === 'left') return { vertical: true, v: b.minx };
-    if (dir === 'up') return { vertical: false, v: b.miny };
-    return { vertical: false, v: b.maxy };
+  // 가운데 상자와 각 방향 상자 사이의 기준선
+  function foldLine(dir) {
+    var o = boxOrigin('center');
+    if (dir === 'right') return { vertical: true, v: o.x + B + G / 2 };
+    if (dir === 'left') return { vertical: true, v: o.x - G / 2 };
+    if (dir === 'up') return { vertical: false, v: o.y - G / 2 };
+    return { vertical: false, v: o.y + B + G / 2 };
   }
-  function reflectPts(pts, dir) {
-    var a = axisOf(dir, pts);
-    return pts.map(function (p) {
-      return a.vertical ? { x: 2 * a.v - p.x, y: p.y } : { x: p.x, y: 2 * a.v - p.y };
-    });
-  }
-  function canFlipDir(dir, pts) {
-    var b = bbox(reflectPts(pts, dir));
-    return b.minx >= 0 && b.maxx <= GRID_SIZE && b.miny >= 0 && b.maxy <= GRID_SIZE;
-  }
-  function canFlip() {
-    return hasShape() && !state.isAnimating && !state.drawingMode && canFlipDir(state.direction, rightPts());
-  }
-  function polyStr(pts) {
-    return pts.map(function (p) { var q = toPx(p); return q.x + ',' + q.y; }).join(' ');
-  }
-  function polyStrIdx(pts, idxs) {
-    return polyStr(idxs.map(function (i) { return pts[i]; }));
+  function polyStr(pts, map) {
+    return pts.map(function (p) { var q = map(p); return q.x + ',' + q.y; }).join(' ');
   }
 
   // ---------- 그리기 요소 ----------
-  function drawGrid(parent) {
-    var g = S('g', {}, parent);
-    for (var i = 0; i <= GRID_SIZE; i++) {
-      var a = toPx({ x: i, y: 0 }), b = toPx({ x: i, y: GRID_SIZE });
-      S('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: '#E4DFD3', 'stroke-width': 1 }, g);
-      var c = toPx({ x: 0, y: i }), d = toPx({ x: GRID_SIZE, y: i });
-      S('line', { x1: c.x, y1: c.y, x2: d.x, y2: d.y, stroke: '#E4DFD3', 'stroke-width': 1 }, g);
-    }
-  }
-  function drawHead(parent, pts) {
-    if (!pts || !pts.length) return;
-    var h = toPx(pts[0]);
-    S('circle', { cx: h.x, cy: h.y, r: 6, fill: '#F2B84B', stroke: '#fff', 'stroke-width': 1.5 }, parent);
-  }
-  function drawShape(parent, accent, pts) {
-    var g = S('g', {}, parent);
-    if (state.shapeName === HOUSE) {
-      S('polygon', { points: polyStrIdx(pts, [0, 1, 2, 7]), fill: '#FFD666', stroke: '#D9A32B', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, g);
-      S('polygon', { points: polyStrIdx(pts, [6, 3, 4, 5]), fill: '#6FD8F5', stroke: '#2AA9CE', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, g);
-    } else if (state.shapeName === TRI) {
-      S('polygon', { points: polyStr(pts), fill: 'none', stroke: '#8BC34A', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g);
-    } else {
-      S('polygon', { points: polyStr(pts), fill: accent + '55', stroke: accent, 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, g);
-    }
-    drawHead(g, pts);
-  }
-  // 뒤집기 직전 위치를 알려주는 점선 윤곽
-  function drawGhost(parent, pts) {
-    S('polygon', {
-      points: polyStr(pts), fill: 'none', stroke: '#8A8578', 'stroke-width': 1.5,
-      'stroke-dasharray': '4 3', 'stroke-linejoin': 'round', opacity: 0.7
-    }, parent);
-  }
-  // 기준선(점선)과 뒤집는 방향을 보여주는 곡선 화살표
-  function drawAxisAndArrow(parent, info) {
-    var b = info.bbox, a = info.axis, dir = info.dir;
-    var g = S('g', {}, parent);
-    var lo, hi, p1, p2;
-    if (a.vertical) {
-      lo = Math.max(0, b.miny - 0.7); hi = Math.min(GRID_SIZE, b.maxy + 0.7);
-      p1 = toPx({ x: a.v, y: lo }); p2 = toPx({ x: a.v, y: hi });
-    } else {
-      lo = Math.max(0, b.minx - 0.7); hi = Math.min(GRID_SIZE, b.maxx + 0.7);
-      p1 = toPx({ x: lo, y: a.v }); p2 = toPx({ x: hi, y: a.v });
-    }
-    S('line', {
-      x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, stroke: '#C1622D', 'stroke-width': 2.5,
-      'stroke-dasharray': '7 5', 'stroke-linecap': 'round', opacity: info.preview ? 0.45 : 0.9
-    }, g);
-    if (info.preview) return;
+  var THEME = {
+    center: { frame: '#8E9BD6', fill: '#FFFFFF', pill: '#E3E7F7', text: '#3E4A86' },
+    side:   { frame: '#A8C66C', fill: '#FFFFFF', pill: '#E2EEC9', text: '#3D5A1E' }
+  };
 
-    var xc = (b.minx + b.maxx) / 2, yc = (b.miny + b.maxy) / 2;
-    var s, e, c;
-    if (dir === 'right') { s = { x: a.v - 1, y: yc }; e = { x: a.v + 1, y: yc }; c = { x: a.v, y: yc - 1.6 }; }
-    else if (dir === 'left') { s = { x: a.v + 1, y: yc }; e = { x: a.v - 1, y: yc }; c = { x: a.v, y: yc - 1.6 }; }
-    else if (dir === 'up') { s = { x: xc, y: a.v + 1 }; e = { x: xc, y: a.v - 1 }; c = { x: xc + 1.6, y: a.v }; }
-    else { s = { x: xc, y: a.v - 1 }; e = { x: xc, y: a.v + 1 }; c = { x: xc + 1.6, y: a.v }; }
-    var ps = toPx(s), pe = toPx(e), pc = toPx(c);
-    var color = '#F2984B';
-    var tx = pe.x - pc.x, ty = pe.y - pc.y;
-    var tl = Math.sqrt(tx * tx + ty * ty);
-    var ux = tx / tl, uy = ty / tl, nx = -uy, ny = ux, hl = 13;
-    var bx = pe.x - ux * hl, by = pe.y - uy * hl;
-    S('path', {
-      d: 'M ' + ps.x + ' ' + ps.y + ' Q ' + pc.x + ' ' + pc.y + ' ' + bx + ' ' + by,
-      fill: 'none', stroke: color, 'stroke-width': 3, 'stroke-linecap': 'round'
-    }, g);
-    S('polygon', {
-      points: pe.x + ',' + pe.y + ' ' + (bx + nx * 7) + ',' + (by + ny * 7) + ' ' + (bx - nx * 7) + ',' + (by - ny * 7),
-      fill: color
-    }, g);
+  function drawBox(key, label) {
+    var o = boxOrigin(key);
+    var th = key === 'center' ? THEME.center : THEME.side;
+    var g = S('g', {}, board);
+    var hit = S('rect', { x: o.x - 6, y: o.y - 6, width: B + 12, height: B + 12, rx: 16, fill: th.fill, stroke: th.frame, 'stroke-width': 3 }, g);
+    for (var i = 1; i < N; i++) {
+      S('line', { x1: o.x + i * U, y1: o.y, x2: o.x + i * U, y2: o.y + B, stroke: '#E6E1D6', 'stroke-width': 1.2 }, g);
+      S('line', { x1: o.x, y1: o.y + i * U, x2: o.x + B, y2: o.y + i * U, stroke: '#E6E1D6', 'stroke-width': 1.2 }, g);
+    }
+    S('rect', { x: o.x, y: o.y, width: B, height: B, fill: 'none', stroke: '#D5CFC2', 'stroke-width': 1.2 }, g);
+    // 이름표
+    var pw = label.length * 19 + 34, ph = 34;
+    var px = o.x + B / 2 - pw / 2, py = o.y - 6 - ph / 2;
+    S('rect', { x: px, y: py, width: pw, height: ph, rx: 17, fill: th.pill, stroke: th.frame, 'stroke-width': 2 }, g);
+    var tx = S('text', { x: o.x + B / 2, y: py + ph / 2 + 7, 'text-anchor': 'middle', 'font-size': 19, 'font-weight': 800, fill: th.text, 'font-family': 'inherit' }, g);
+    tx.textContent = label;
+    if (key !== 'center') {
+      g.setAttribute('class', 'tap');
+      g.addEventListener('click', function () { startFlip(key); });
+    }
+    return hit;
+  }
+
+  function drawFoldLine(dir) {
+    var o = boxOrigin('center');
+    var a = foldLine(dir);
+    var active = state.anim && state.anim.dir === dir;
+    var color = '#E8657A';
+    var g = S('g', { opacity: active || state.flipped[dir] ? 1 : 0.75 }, board);
+    var p1, p2;
+    if (a.vertical) { p1 = { x: a.v, y: o.y }; p2 = { x: a.v, y: o.y + B }; }
+    else { p1 = { x: o.x, y: a.v }; p2 = { x: o.x + B, y: a.v }; }
+    S('line', { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, stroke: '#555', 'stroke-width': 2, 'stroke-dasharray': '3 5', 'stroke-linecap': 'round' }, g);
+    // 교과서처럼 기준선을 넘어가는 곡선 화살표
+    var s, e, c, mid = a.vertical ? o.y + B / 2 : o.x + B / 2;
+    var R = 24;
+    if (dir === 'right') { s = { x: a.v - R, y: mid + 12 }; c = { x: a.v, y: mid - 52 }; e = { x: a.v + R, y: mid + 12 }; }
+    else if (dir === 'left') { s = { x: a.v + R, y: mid + 12 }; c = { x: a.v, y: mid - 52 }; e = { x: a.v - R, y: mid + 12 }; }
+    else if (dir === 'up') { s = { x: mid + 12, y: a.v + R }; c = { x: mid - 52, y: a.v }; e = { x: mid + 12, y: a.v - R }; }
+    else { s = { x: mid + 12, y: a.v - R }; c = { x: mid - 52, y: a.v }; e = { x: mid + 12, y: a.v + R }; }
+    var tx = e.x - c.x, ty = e.y - c.y, tl = Math.sqrt(tx * tx + ty * ty);
+    var ux = tx / tl, uy = ty / tl, nx = -uy, ny = ux, hl = 12;
+    var bx = e.x - ux * hl, by = e.y - uy * hl;
+    S('path', { d: 'M ' + s.x + ' ' + s.y + ' Q ' + c.x + ' ' + c.y + ' ' + bx + ' ' + by, fill: 'none', stroke: color, 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+    S('polygon', { points: e.x + ',' + e.y + ' ' + (bx + nx * 8) + ',' + (by + ny * 8) + ' ' + (bx - nx * 8) + ',' + (by - ny * 8), fill: color }, g);
+    g.setAttribute('class', 'tap');
+    g.addEventListener('click', function () { startFlip(dir); });
+  }
+
+  function drawShape(parent, shape, map) {
+    var g = S('g', {}, parent);
+    shape.parts.forEach(function (part) {
+      if (part.pts.length < 2) return;
+      S('polygon', { points: polyStr(part.pts, map), fill: part.fill, stroke: part.stroke, 'stroke-width': 3, 'stroke-linejoin': 'round' }, g);
+    });
+    if (shape.head && shape.parts[0].pts.length) {
+      var h = map(shape.parts[0].pts[0]);
+      S('circle', { cx: h.x, cy: h.y, r: 7, fill: '#F2B84B', stroke: '#fff', 'stroke-width': 2 }, g);
+    }
+    return g;
   }
 
   // ---------- 렌더링 ----------
@@ -456,194 +397,129 @@
   function renderDrawBar() {
     var show = state.shapeName === DRAW;
     drawBar.hidden = !show;
-    // 그리는 중에는 CSS로 조작 버튼을 숨겨 작은 화면에서 격자판을 넓게 씀
     var root = document.documentElement;
-    var cls = ' ' + root.className + ' ';
-    var active = show && state.drawingMode;
-    cls = cls.replace(' drawing-active ', ' ');
-    root.className = (cls + (active ? 'drawing-active' : '')).replace(/^\s+|\s+$/g, '');
+    var cls = (' ' + root.className + ' ').replace(' drawing-active ', ' ');
+    root.className = (cls + (show && state.drawingMode ? 'drawing-active' : '')).replace(/^\s+|\s+$/g, '');
     if (!show) return;
     var n = state.customPoints.length;
     drawMsg.textContent = state.drawingMode
-      ? '왼쪽 모눈판의 점을 차례로 눌러 도형을 그려보세요. (점 ' + n + '개)'
-      : '도형이 완성되었습니다. 뒤집기를 진행해보세요.';
+      ? "가운데 '뒤집기 전' 모눈의 점을 차례로 눌러 도형을 그려 보세요. (점 " + n + '개)'
+      : '도형이 완성되었어요. 뒤집을 방향을 눌러 보세요.';
     finishBtn.disabled = !(state.drawingMode && n >= 3);
   }
 
-  function renderPanels() {
-    svgL.textContent = '';
-    svgR.textContent = '';
-    var has = hasShape();
+  function renderBoard() {
+    board.textContent = '';
+    animGroup = null;
+    var centerRect = drawBox('center', '뒤집기 전');
+    DIRS.forEach(function (d) { drawBox(d.key, d.name + '으로 뒤집기'); });
+    DIRS.forEach(function (d) { drawFoldLine(d.key); });
 
-    // 뒤집기 전 (왼쪽): 처음 도형
-    drawGrid(svgL);
-    if (has) drawShape(svgL, '#1F4B3F', getPoints());
+    var shape = getShape();
+    var drawable = state.shapeName === DRAW && state.drawingMode;
+    if (hasShape() || drawable) drawShape(board, shape, mapper('center', null));
     if (state.shapeName === DRAW) {
+      var m = mapper('center', null);
       state.customPoints.forEach(function (p) {
-        var q = toPx(p);
-        S('circle', { cx: q.x, cy: q.y, r: 5, fill: '#C1622D', stroke: '#fff', 'stroke-width': 1.5 }, svgL);
+        var q = m(p);
+        S('circle', { cx: q.x, cy: q.y, r: 6, fill: '#C1622D', stroke: '#fff', 'stroke-width': 2 }, board);
       });
     }
-    var drawable = state.shapeName === DRAW;
-    svgL.style.touchAction = drawable ? 'none' : 'manipulation';
-    svgL.style.cursor = drawable ? 'crosshair' : 'default';
-
-    // 뒤집은 후 (오른쪽)
-    drawGrid(svgR);
-    flipGroup = null;
-    if (has) {
-      var pts, ghost, info;
-      if (state.isAnimating) {
-        pts = state.animPts; ghost = state.animPts; info = state.animInfo;
-      } else {
-        pts = rightPts();
-        ghost = state.flips > 0 ? state.prevPts : null;
-        info = state.flips > 0 ? state.lastFlip : {
-          dir: state.direction, axis: axisOf(state.direction, pts), bbox: bbox(pts), preview: true
-        };
-      }
-      if (ghost) drawGhost(svgR, ghost);
-      flipGroup = S('g', {}, svgR);
-      drawShape(flipGroup, '#C1622D', pts);
-      drawAxisAndArrow(svgR, info);
+    if (drawable) {
+      // 그리기 중에는 가운데 상자 위에 투명한 판을 깔아 점 누르기를 받음
+      var o = boxOrigin('center');
+      var catcher = S('rect', { x: o.x - U / 2, y: o.y - U / 2, width: B + U, height: B + U, fill: 'transparent', style: 'cursor:crosshair' }, board);
+      catcher.addEventListener('click', handleDrawClick);
     }
-    updateDynamic();
+
+    if (hasShape()) {
+      DIRS.forEach(function (d) {
+        if (state.flipped[d.key] && !(state.anim && state.anim.dir === d.key)) {
+          drawShape(board, shape, mapper(d.key, d.key));
+        }
+      });
+      if (state.anim) {
+        animGroup = drawShape(board, shape, mapper('center', null));
+        updateAnim();
+      }
+    }
+    board.style.touchAction = drawable ? 'none' : 'manipulation';
   }
 
-  // 애니메이션 중 매 프레임 갱신되는 부분 (기준선을 축으로 접히듯 뒤집힘)
-  function updateDynamic() {
-    if (!flipGroup) return;
-    if (!state.isAnimating) { flipGroup.removeAttribute('transform'); return; }
-    var a = state.animInfo.axis;
-    var s = Math.cos(Math.PI * state.flipT);
-    if (a.vertical) {
-      var X = toPx({ x: a.v, y: 0 }).x;
-      flipGroup.setAttribute('transform', 'translate(' + X + ' 0) scale(' + s + ' 1) translate(' + (-X) + ' 0)');
-    } else {
-      var Y = toPx({ x: 0, y: a.v }).y;
-      flipGroup.setAttribute('transform', 'translate(0 ' + Y + ') scale(1 ' + s + ') translate(0 ' + (-Y) + ')');
-    }
+  // 기준선을 축으로 종이를 접듯이 넘어가는 애니메이션
+  function updateAnim() {
+    if (!animGroup || !state.anim) return;
+    var a = foldLine(state.anim.dir);
+    var s = Math.cos(Math.PI * state.anim.t);
+    if (a.vertical) animGroup.setAttribute('transform', 'translate(' + a.v + ' 0) scale(' + s + ' 1) translate(' + (-a.v) + ' 0)');
+    else animGroup.setAttribute('transform', 'translate(0 ' + a.v + ') scale(1 ' + s + ') translate(0 ' + (-a.v) + ')');
   }
 
   function renderControls() {
     Array.prototype.forEach.call(dirBtns.children, function (b, i) {
-      b.className = 'btn' + (state.direction === DIRS[i].key ? ' on-green' : '');
-      b.disabled = hasShape() && !canFlipDir(DIRS[i].key, rightPts());
+      var k = DIRS[i].key;
+      b.className = 'btn' + (state.anim && state.anim.dir === k ? ' on-green' : state.flipped[k] ? ' done' : '');
+      b.disabled = !hasShape() || !!state.anim;
     });
-    actionBtn.disabled = !canFlip();
   }
 
   function renderStatus() { statusEl.textContent = state.status; }
 
-  // 선택한 방향으로 더 뒤집을 수 없게 되면, 뒤집을 수 있는 다른 방향으로 자동 전환
-  function ensureValidDirection() {
-    if (!hasShape() || state.drawingMode) return;
-    var pts = rightPts();
-    if (canFlipDir(state.direction, pts)) return;
-    for (var i = 0; i < DIRS.length; i++) {
-      if (canFlipDir(DIRS[i].key, pts)) { state.direction = DIRS[i].key; return; }
-    }
-  }
-
-  // 어느 방향으로도 뒤집을 공간이 없으면 안내 문구 표시
-  function applyHint() {
-    if (state.isAnimating) return;
-    var blocked = hasShape() && !state.drawingMode && !canFlipDir(state.direction, rightPts());
-    if (blocked) state.status = HINT;
-    else if (state.status === HINT) state.status = state.lastStatus;
-    renderStatus();
-  }
-
   function render() {
-    applyGrid();
-    ensureValidDirection();
     renderShapeButtons();
     renderDrawBar();
-    renderPanels();
+    renderBoard();
     renderControls();
-    applyHint();
     renderStatus();
-    layoutPanels();
+    layoutBoard();
   }
 
   // ---------- 동작 ----------
-  function handleGridClick(e) {
+  function handleDrawClick(e) {
     if (state.shapeName !== DRAW || !state.drawingMode) return;
-    // 테두리(2px)와 화면 배율을 직접 보정해 viewBox 좌표로 변환 (브라우저별 getScreenCTM 차이 방지)
-    var rect = svgL.getBoundingClientRect();
-    var inner = rect.width - 4;
-    if (inner <= 0) return;
-    var p = {
-      x: (e.clientX - rect.left - 2) * SVG_SIZE / inner,
-      y: (e.clientY - rect.top - 2) * SVG_SIZE / inner
-    };
-    var gx = Math.round((p.x - PAD) / CELL);
-    var gy = Math.round((p.y - PAD) / CELL);
-    if (gx < 0 || gx > GRID_SIZE || gy < 0 || gy > GRID_SIZE) return;
+    var rect = board.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    var k = VB / rect.width;
+    var vx = (e.clientX - rect.left) * k, vy = (e.clientY - rect.top) * k;
+    var o = boxOrigin('center');
+    var gx = Math.round((vx - o.x) / U), gy = Math.round((vy - o.y) / U);
+    if (gx < 0 || gx > N || gy < 0 || gy > N) return;
     state.customPoints.push({ x: gx, y: gy });
     renderDrawBar();
-    renderPanels();
+    renderBoard();
     renderControls();
-    layoutPanels();
   }
 
-  function animateFlip(duration, onDone) {
-    var start = performance.now();
+  function startFlip(dir) {
+    if (!hasShape() || state.anim) return;
+    var d = dirOf(dir);
+    state.anim = { dir: dir, t: 0 };
+    state.status = d.name + '으로 뒤집는 중...';
+    renderBoard(); renderControls(); renderStatus();
+    var start = null, duration = 1000;
     function tick(now) {
+      if (start === null) start = now;
       var t = Math.min(1, (now - start) / duration);
-      state.flipT = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      updateDynamic();
-      if (t < 1) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        state.flipT = 1;
-        updateDynamic();
-        onDone();
-      }
+      state.anim.t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      updateAnim();
+      if (t < 1) { rafId = requestAnimationFrame(tick); return; }
+      state.anim = null;
+      state.flipped[dir] = true;
+      var all = DIRS.every(function (x) { return state.flipped[x.key]; });
+      state.status = all
+        ? '네 방향으로 모두 뒤집었어요! 위쪽과 아래쪽, 왼쪽과 오른쪽으로 뒤집은 모양을 비교해 보세요.'
+        : d.name + '으로 뒤집었어요. 모양과 방향은 어떻게 되었나요?';
+      renderBoard(); renderControls(); renderStatus();
     }
     rafId = requestAnimationFrame(tick);
   }
 
-  function startFlip() {
-    if (!canFlip()) return;
-    var dir = state.direction;
-    var d = dirOf(dir);
-    var pts = rightPts();
-    state.animPts = pts;
-    state.animInfo = { dir: dir, axis: axisOf(dir, pts), bbox: bbox(pts), preview: false };
-    state.flipT = 0;
-    state.isAnimating = true;
-    state.status = d.name + '으로 뒤집는 중...';
-    renderPanels();
-    renderControls();
-    renderStatus();
-
-    animateFlip(900, function () {
-      state.prevPts = pts;
-      state.curPts = reflectPts(pts, dir);
-      state.lastFlip = state.animInfo;
-      state.flips += 1;
-      state.isAnimating = false;
-      state.flipT = 0;
-      state.lastStatus = d.name + '으로 뒤집었습니다. (지금까지 ' + state.flips + '번) 어떤 부분이 바뀌었나요?';
-      state.status = state.lastStatus;
-      ensureValidDirection();
-      renderPanels();
-      renderControls();
-      applyHint();
-    });
-  }
-
   function reset() {
     if (rafId) cancelAnimationFrame(rafId);
-    state.isAnimating = false;
-    state.flips = 0;
-    state.curPts = null; state.prevPts = null; state.lastFlip = null;
-    state.animPts = null; state.animInfo = null; state.flipT = 0;
-    state.lastStatus = DEFAULT_STATUS;
+    state.anim = null;
+    state.flipped = { up: false, down: false, left: false, right: false };
     state.status = DEFAULT_STATUS;
   }
-
   function selectShape(name) {
     reset();
     state.shapeName = name;
@@ -670,45 +546,28 @@
     render();
   }
 
-  // ---------- 화면 크기에 맞춰 두 격자판 크기 계산 (아이폰 주소창 변화 대응) ----------
-  function layoutPanels() {
-    var w = panels.clientWidth;
-    var h = panels.clientHeight;
-    var gap = w < 600 ? 8 : 20;
-    var side = Math.floor(Math.max(48, Math.min((w - gap) / 2, h - 24, 480)));
-    panels.style.gap = gap + 'px';
-    panelR.style.marginLeft = document.documentElement.className.indexOf('no-flex-gap') >= 0 ? gap + 'px' : '';
-    [[panelL, svgL], [panelR, svgR]].forEach(function (pair) {
-      pair[0].style.width = side + 'px';
-      pair[1].setAttribute('width', side);
-      pair[1].setAttribute('height', side);
-    });
+  // ---------- 화면 크기에 맞춰 판 크기 계산 (아이폰 주소창 변화 대응) ----------
+  function layoutBoard() {
+    var side = Math.floor(Math.max(120, Math.min(boardArea.clientWidth, boardArea.clientHeight)));
+    board.setAttribute('width', side);
+    board.setAttribute('height', side);
   }
 
   // ---------- 초기화 ----------
   DIRS.forEach(function (d) {
     var b = document.createElement('button');
     b.textContent = d.label;
-    b.style.minWidth = '84px';
-    b.addEventListener('click', function () {
-      state.direction = d.key;
-      renderPanels();
-      renderControls();
-      applyHint();
-    });
+    b.addEventListener('click', function () { startFlip(d.key); });
     dirBtns.appendChild(b);
   });
-
-  svgL.addEventListener('click', handleGridClick);
   finishBtn.addEventListener('click', finishDrawing);
   clearBtn.addEventListener('click', clearDrawing);
-  actionBtn.addEventListener('click', startFlip);
   resetBtn.addEventListener('click', function () { reset(); render(); });
 
-  window.addEventListener('resize', layoutPanels);
-  window.addEventListener('orientationchange', layoutPanels);
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', layoutPanels);
-  if (window.ResizeObserver) new ResizeObserver(layoutPanels).observe(panels);
+  window.addEventListener('resize', layoutBoard);
+  window.addEventListener('orientationchange', layoutBoard);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', layoutBoard);
+  if (window.ResizeObserver) new ResizeObserver(layoutBoard).observe(boardArea);
 
   render();
 })();
