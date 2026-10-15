@@ -236,11 +236,19 @@
   })();
 
   // ---------- 격자 설정 ----------
-  var GRID_SIZE = 12;               // 12 x 12 칸
-  var CELL = 28;                    // 칸 하나(viewBox 단위)
+  var PRESET_GRID = 12;             // 기본 도형: 12 x 12 칸
+  var DRAW_GRID = 5;                // 직접 그리기: 활동지와 같은 5 x 5 칸
   var PAD = 20;
-  var SVG_SIZE = GRID_SIZE * CELL + PAD * 2;
+  var SVG_SIZE = PRESET_GRID * 28 + PAD * 2;   // 격자판 크기는 항상 같게 유지
+  var GRID_SIZE = PRESET_GRID;
+  var CELL = 28;                    // 칸 하나(viewBox 단위), 격자 칸 수에 따라 바뀜
   var NS = 'http://www.w3.org/2000/svg';
+
+  // 지금 고른 도형에 맞춰 격자 칸 수와 칸 크기를 정함
+  function applyGrid() {
+    GRID_SIZE = state.shapeName === DRAW ? DRAW_GRID : PRESET_GRID;
+    CELL = (SVG_SIZE - PAD * 2) / GRID_SIZE;
+  }
 
   function toPx(p) { return { x: PAD + p.x * CELL, y: PAD + p.y * CELL }; }
 
@@ -323,8 +331,12 @@
     return b;
   }
   // 뒤집는 기준선: 도형의 해당 쪽 끝 선
+  // (직접 그리기 5x5 모눈에서는 모눈판 가운데 선을 기준으로 종이를 통째로 뒤집듯 뒤집어 칸 밖으로 나가지 않게 함)
   function axisOf(dir, pts) {
     var b = bbox(pts);
+    if (state.shapeName === DRAW) {
+      return { vertical: dir === 'left' || dir === 'right', v: GRID_SIZE / 2 };
+    }
     if (dir === 'right') return { vertical: true, v: b.maxx };
     if (dir === 'left') return { vertical: true, v: b.minx };
     if (dir === 'up') return { vertical: false, v: b.miny };
@@ -543,6 +555,7 @@
   }
 
   function render() {
+    applyGrid();
     ensureValidDirection();
     renderShapeButtons();
     renderDrawBar();
