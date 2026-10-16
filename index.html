@@ -225,6 +225,14 @@
 
   // ---------- 기본 도형 (5x5 모눈 좌표) ----------
   var PRESETS = {
+    // 교과서(사각형을 뒤집으면 어떻게 되는지 알아봅시다)와 같은 사각형·모눈
+    '사각형': {
+      head: false,
+      textbook: true,
+      parts: [
+        { pts: [{ x: 1, y: 2 }, { x: 4, y: 1 }, { x: 4, y: 4 }, { x: 1, y: 4 }], fill: 'rgba(181,101,47,0.12)', stroke: '#B5652F' }
+      ]
+    },
     '깃발 모양': {
       head: false,
       parts: [
@@ -251,7 +259,7 @@
 
   // ---------- 상태 ----------
   var state = {
-    shapeName: '깃발 모양',
+    shapeName: '사각형',
     customPoints: [],
     drawingMode: false,
     flipped: { up: false, down: false, left: false, right: false },
@@ -320,11 +328,13 @@
     var th = key === 'center' ? THEME.center : THEME.side;
     var g = S('g', {}, board);
     var hit = S('rect', { x: o.x - 6, y: o.y - 6, width: B + 12, height: B + 12, rx: 16, fill: th.fill, stroke: th.frame, 'stroke-width': 3 }, g);
+    var tb = state.shapeName !== DRAW && PRESETS[state.shapeName] && PRESETS[state.shapeName].textbook;
     for (var i = 1; i < N; i++) {
-      S('line', { x1: o.x + i * U, y1: o.y, x2: o.x + i * U, y2: o.y + B, stroke: '#E6E1D6', 'stroke-width': 1.2 }, g);
-      S('line', { x1: o.x, y1: o.y + i * U, x2: o.x + B, y2: o.y + i * U, stroke: '#E6E1D6', 'stroke-width': 1.2 }, g);
+      var l1 = S('line', { x1: o.x + i * U, y1: o.y, x2: o.x + i * U, y2: o.y + B, stroke: tb ? '#4A6FD1' : '#E6E1D6', 'stroke-width': tb ? 1.3 : 1.2 }, g);
+      var l2 = S('line', { x1: o.x, y1: o.y + i * U, x2: o.x + B, y2: o.y + i * U, stroke: tb ? '#4A6FD1' : '#E6E1D6', 'stroke-width': tb ? 1.3 : 1.2 }, g);
+      if (tb) { l1.setAttribute('stroke-dasharray', '5 4'); l2.setAttribute('stroke-dasharray', '5 4'); }
     }
-    S('rect', { x: o.x, y: o.y, width: B, height: B, fill: 'none', stroke: '#D5CFC2', 'stroke-width': 1.2 }, g);
+    S('rect', { x: o.x, y: o.y, width: B, height: B, fill: 'none', stroke: tb ? '#4A6FD1' : '#D5CFC2', 'stroke-width': tb ? 2 : 1.2 }, g);
     // 이름표
     var pw = label.length * 19 + 34, ph = 34;
     var px = o.x + B / 2 - pw / 2, py = o.y - 6 - ph / 2;
